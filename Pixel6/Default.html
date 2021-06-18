@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #91bead;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Add padding to containers */
+  .container {
+    padding: 16px;
+    background-color: white;
+    width:500px;
+    margin:auto;
+  }
+
+  /* Full-width input fields */
+  input[type=text], input[type=number] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border: none;
+    background: #f1f1f1;
+  }
+
+
+
+  input[type=text]:focus, input[type=number]:focus {
+    background-color: #ddd;
+    outline: none;
+  }
+
+  /* Overwrite default styles of hr */
+  hr {
+    border: 1px solid #f1f1f1;
+    margin-bottom: 25px;
+  }
+
+  /* Set a style for the submit button */
+  .registerbtn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+  }
+
+  .registerbtn:hover {
+    opacity: 1;
+  }
+
+  /* Add a blue text color to links */
+  a {
+    color: dodgerblue;
+  }
+
+  /* Set a grey background color and center the text of the "sign in" section */
+  .signin {
+    background-color: #f1f1f1;
+    text-align: center;
+  }
+  .error{
+    position:relative;
+    top:-22px;
+    font-size:12px;
+    color:red;
+  }
+  .phone{
+    display: flex;
+    flex-direction: row;
+  }
+  .phone img{
+    margin-top: 8px;
+    float: left;
+  }
+  .phone span{
+    margin:0px 5px;
+  }
+  </style>
+</head>
+<body>
+  <form>
+    <div class="container" id="default">
+      <h1>Register</h1>
+      <p>Please fill in this form to register.</p>
+      <hr>
+
+      <label for="name"><b>Full Name</b></label>
+      <input type="text" placeholder="Enter Full Name" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123) || (event.charCode==32)" onchange="return validateName();"  id="name" required>
+      <span class="error"><p id="name_error"></p></span>
+
+      <label for="email"><b>Email</b></label>
+      <input type="text" placeholder="Enter Email Address" onchange="return validateEmail();"  id="email" required>
+      <span class="error"><p id="email_error"></p></span>
+
+      <label for="phone"><b>Phone Number</b></label>
+      <div class="phone">
+        <img src="assets/images/default.png" width="40" height="40" id="phone_image">
+        <span class="state"><p id="phone_state"></p></span>
+        <input type="text" placeholder="Enter Phone Number" oninput="return hyphen();"   onkeypress="return isNumber(event)"  id="phone" required>
+      </div>
+      <span class="error"><p id="phone_error"></p></span>
+
+
+      <button onclick="return onSubmit(); " class="registerbtn">Submit</button>
+    </div>
+  </form>
+  <form>
+    <div class="container" id="message" style="display:none" >
+      <p>
+        The OTP is: <span id="messageOtp"></span></p>
+      <h1>Dear <span id="messageName"></span>,</h1>
+      <p>
+
+        Thank you for your inquiry. A 4 digit verification number has been sent to your phone number: <span id="messagePhone"></span>,
+         please enter in the following box and submit for confirmation:</p>
+        <hr>
+
+
+        <label for="otp"><b>OTP</b></label>
+        <input type="text" placeholder="Enter OTP"   id="otp" required>
+
+
+
+        <button onclick="return onSubmitMessage();"  class="registerbtn">Submit</button>
+      </div>
+
+    </form>
+    <script type="text/javascript">
+    var otp;
+    var count = 0;
+    function isvalid(){
+
+      if(validateName() && validateEmail() && validatePhone()){
+        return true;
+
+      }
+      return false;
+    }
+
+    function onSubmit(){
+
+      if(isvalid()){
+        var x = document.getElementById("default");
+        var y = document.getElementById("message");
+        x.style.display = "none";
+        y.style.display = "block";
+        var name = document.getElementById("name").value;
+        name = name.split(" ");
+        document.getElementById("messageName").textContent =name[0];
+        document.getElementById("messagePhone").textContent = document.getElementById("phone").value;
+        otp = Math.floor(1000 + Math.random() * 9000);
+        document.getElementById("messageOtp").textContent =otp;
+      }
+      else{
+        alert("Please check all the input fields");
+      }
+      return false;
+    }
+
+
+    function onSubmitMessage(){
+      if(count == 3 ){
+        window.location = "http://pixel6.co/404/";
+        return false;
+      }
+      if(document.getElementById("otp").value == otp){
+        window.location = "http://pixel6.co/";
+        return false;
+      }else{
+        count++;
+          return false;
+      }
+    }
+
+
+
+    function validateName(){
+      var str = document.getElementById("name").value;
+
+
+      str1 = str.split(" ");
+
+      var regexp = /[a-zA-Z]+\s+[a-zA-Z]+/g;
+      if (!regexp.test(str)) {
+        document.getElementById("name_error").textContent = "Name should be atleast 2 words long.";
+        return false;
+      }
+      else if(str1[0].length < 4 || str1[1].length < 4){
+        document.getElementById("name_error").textContent = "First Name and Last Name should be atleast 4 characters long.";
+        return false;
+      }
+      else{
+        document.getElementById("name_error").textContent = "";
+
+      }
+
+      if(str.length < 9){
+        return false;
+      }
+      return true;
+    }
+
+
+    function validateEmail(){
+      var str = document.getElementById("email").value;
+
+      var regexp = /\S+@\S+\.\S+/;
+      if (!regexp.test(str)) {
+        document.getElementById("email_error").textContent = "Please enter valid email address.";
+        return false;
+      }
+
+      else{
+        document.getElementById("email_error").textContent = ""
+      }
+      return true;
+    }
+
+    function validatePhone(){
+      var str = document.getElementById("phone").value;
+      if(str.length == 12){
+        return true;
+      }
+      return false;
+    }
+
+    function isNumber(evt) {
+      document.getElementById("phone_error").textContent = "";
+
+      var n = document.getElementById("phone").value;
+      if(n.length > 10){
+        return false;
+      }
+
+      if(n.length == 3){
+
+        if (n <= 799 && n >= 621) {
+          document.getElementById("phone_image").src = "assets/images/jio.png";
+        }else if (n <= 920 && n >= 801) {
+          document.getElementById("phone_image").src = "assets/images/idea.png";
+        }else if (n <= 999 && n >= 921) {
+          document.getElementById("phone_image").src = "assets/images/vodafone.png";
+        }else{
+          document.getElementById("phone_image").src = "assets/images/default.png";
+          document.getElementById("phone_error").textContent = "Invalid Number"
+          return false;
+        }
+      }
+
+      if(n.length == 6){
+        m = n.substring(3,6);
+        if (m == 901)
+        {
+          document.getElementById("phone_state").textContent = "Andhra Pradesh"
+        }else if (m == 902 )
+        {
+          document.getElementById("phone_state").textContent = "Arunachal Pradesh"
+        }else if (m == 903 )
+        {
+          document.getElementById("phone_state").textContent = "Assam"
+        }else if (m == 904 )
+        {
+          document.getElementById("phone_state").textContent = "Bihar	"
+        }else if (m == 905 )
+        {
+          document.getElementById("phone_state").textContent = "Chhattisgarh	"
+        }else if (m == 906 )
+        {
+          document.getElementById("phone_state").textContent = "Goa	"
+        }else if (m == 907 )
+        {
+          document.getElementById("phone_state").textContent = "Gujarat	"
+        }else if (m == 908 )
+        {
+          document.getElementById("phone_state").textContent = "Haryana	"
+        }else if (m == 909 )
+        {
+          document.getElementById("phone_state").textContent = "Himachal Pradesh	"
+        }else if (m == 910 )
+        {
+          document.getElementById("phone_state").textContent = "Jharkhand"
+        }else if (m == 911 )
+        {
+          document.getElementById("phone_state").textContent = "Karnataka"
+        }else if (m == 912 )
+        {
+          document.getElementById("phone_state").textContent = "Kerala	"
+        }else if (m == 913 )
+        {
+          document.getElementById("phone_state").textContent = "Madhya Pradesh	"
+        }else if (m == 914 )
+        {
+          document.getElementById("phone_state").textContent = "Maharastra"
+        }else if (m == 915 )
+        {
+          document.getElementById("phone_state").textContent = "Manipur	"
+        }else if (m == 916 )
+        {
+          document.getElementById("phone_state").textContent = "Meghalaya"
+        }else if (m == 917 )
+        {
+          document.getElementById("phone_state").textContent = "Mizoram"
+        }else if (m == 918 )
+        {
+          document.getElementById("phone_state").textContent = "Nagaland"
+        }else if (m == 919 )
+        {
+          document.getElementById("phone_state").textContent = "Odisha"
+        }else if (m == 920 )
+        {
+          document.getElementById("phone_state").textContent = "Punjab"
+        }else if (m == 921 )
+        {
+          document.getElementById("phone_state").textContent = "Rajasthan"
+        }else if (m == 922 )
+        {
+          document.getElementById("phone_state").textContent = "Sikkim"
+        }else if (m == 923 )
+        {
+          document.getElementById("phone_state").textContent = "Tamil Nadu	"
+        }else if (m == 924 )
+        {
+          document.getElementById("phone_state").textContent = "Telangana	"
+        }else if (m == 925 )
+        {
+          document.getElementById("phone_state").textContent = "Tripura"
+        }else if (m == 926 )
+        {
+          document.getElementById("phone_state").textContent = "Uttar Pradesh	"
+        }else if (m == 927 )
+        {
+          document.getElementById("phone_state").textContent = "Uttarakhand"
+        }else if (m == 928 )
+        {
+          document.getElementById("phone_state").textContent = "West Bengal	"
+        }else if (m == 929 )
+        {
+          document.getElementById("phone_state").textContent = "Andaman and Nicobar Islands	"
+        }else if (m == 930 )
+        {
+          document.getElementById("phone_state").textContent = "Chandigarh"
+        }else if (m == 931 )
+        {
+          document.getElementById("phone_state").textContent = "Dadra and Nagar Haveli and Daman and Diu	"
+        }else if (m == 932 )
+        {
+          document.getElementById("phone_state").textContent = "Delhi	"
+        }else if (m == 933 )
+        {
+          document.getElementById("phone_state").textContent = "Jammu and Kashmir	"
+        }else if (m == 934 )
+        {
+          document.getElementById("phone_state").textContent = "Ladakh"
+        }else if (m == 935 )
+        {
+          document.getElementById("phone_state").textContent = "Lakshadweep"
+        }else if (m == 936 )
+        {
+          document.getElementById("phone_state").textContent = "Puducherry"
+        }else{
+          document.getElementById("phone_image").src = "assets/images/default.png";
+          document.getElementById("phone_state").textContent = ""
+          document.getElementById("phone_error").textContent = "Invalid Number"
+          return false;
+        }
+      }
+
+      evt = (evt) ? evt : window.event;
+      var charCode = (evt.which) ? evt.which : evt.keyCode;
+      if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+      }
+      return true;
+    }
+
+    function hyphen(){
+      var n = document.getElementById("phone").value;
+      document.getElementById("phone").value = n.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+    }
+
+    </script>
+  </body>
+
+  </html>
